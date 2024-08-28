@@ -1,16 +1,14 @@
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
 const app = express();
 
 app.use(express.json());
 
-// In-memory storage for employees
 let employees = [];
 
-// Helper function to find employee by ID
+const generateId = () => Date.now().toString();
+
 const findEmployeeById = (id) => employees.find(emp => emp.id === id);
 
-// Helper function to validate employee data
 const validateEmployeeData = (data) => {
     const { name, position, department, contact } = data;
     if (!name || typeof name !== 'string') return false;
@@ -20,7 +18,6 @@ const validateEmployeeData = (data) => {
     return true;
 };
 
-// Create a new employee
 app.post('/api/v1/employees', (req, res) => {
     const { name, position, department, contact } = req.body;
 
@@ -29,7 +26,7 @@ app.post('/api/v1/employees', (req, res) => {
     }
 
     const newEmployee = {
-        id: uuidv4(),
+        id: generateId(),
         name,
         position,
         department,
@@ -42,12 +39,10 @@ app.post('/api/v1/employees', (req, res) => {
     res.status(201).json(newEmployee);
 });
 
-// Retrieve a list of all employees
 app.get('/api/v1/employees', (req, res) => {
     res.status(200).json(employees);
 });
 
-// Retrieve details of a specific employee by ID
 app.get('/api/v1/employees/:id', (req, res) => {
     const employee = findEmployeeById(req.params.id);
 
@@ -58,7 +53,6 @@ app.get('/api/v1/employees/:id', (req, res) => {
     res.status(200).json(employee);
 });
 
-// Update employee details by ID
 app.put('/api/v1/employees/:id', (req, res) => {
     const employee = findEmployeeById(req.params.id);
     if (!employee) {
@@ -75,7 +69,6 @@ app.put('/api/v1/employees/:id', (req, res) => {
     res.status(200).json(employee);
 });
 
-// Record performance reviews for an employee
 app.post('/api/v1/employees/:id/reviews', (req, res) => {
     const employee = findEmployeeById(req.params.id);
     if (!employee) {
@@ -92,7 +85,6 @@ app.post('/api/v1/employees/:id/reviews', (req, res) => {
     res.status(201).json(employee);
 });
 
-// Deactivate an employee's profile by ID
 app.patch('/api/v1/employees/:id/deactivate', (req, res) => {
     const employee = findEmployeeById(req.params.id);
     if (!employee) {
@@ -103,7 +95,6 @@ app.patch('/api/v1/employees/:id/deactivate', (req, res) => {
     res.status(200).json(employee);
 });
 
-// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
